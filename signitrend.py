@@ -67,7 +67,7 @@ class SigniTrend:
         self.hash_function_count = hash_function_count
         self.beta = bias
         self.alerting_threshold = alerting_threshold
-        # We don't care for cryptographically secure hashes
+        # We don't care for cryptographically secure hashes, they just need to "hash distributedly enough".
         hash_functions_available = [hashlib.md5, hashlib.sha1, hashlib.sha224, hashlib.sha256, hashlib.sha384,
                                     hashlib.sha512]
         if hash_function_count >= len(hash_functions_available) or hash_function_count <= 0:
@@ -108,7 +108,7 @@ class SigniTrend:
     def _update_bucket(self, x: float, bucket: dict):
         df = bucket["data"]
         df.loc[len(df)] = x
-        # Only keep the part of our rolling window that contributes to the EWM{A|Var}.
+        # Only keep the part of our rolling window that contributes to the EWM{A|Var} window.
         df.drop(0, inplace=True)
         df.reset_index(inplace=True)
         del df['index']
@@ -120,13 +120,17 @@ class SigniTrend:
     def index_new_tweet(self, id_str, tweet_tokens: list):
         """ Indexes a tweet represented by a list of str tokens. For checking a reverse index,
         the tweet's id_str is needed.
+
+        Note that to achieve best results, you should remove all URLs from a tweet, then 
+        de-punctuate, de-stopword, and then stem the tweet text.
         """
         self.tweet_count += 1
         unique_words = set(tweet_tokens)
         unique_word_pairs = set()
         for i in unique_words:
             for j in unique_words - {i}:
-                unique_word_pairs.add(tuple(sorted([i, j])))  # sorting because to us [a, b] = [b, a]
+                # To us [a, b] = [b, a], and sorting gives us a distinct representation.
+                unique_word_pairs.add(tuple(sorted([i, j])))
         for w in unique_words | unique_word_pairs:
             self.index[self.epoch][w] = id_str
             current_freq = self.frequency_map.get(w, 0)
