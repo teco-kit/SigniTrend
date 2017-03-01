@@ -6,10 +6,10 @@ It is designed to take a stream of tweet contents and detect significantly frequ
 ## Usage instructions
 Repeat for every epoch/timestep/timeslot/`<unit_of_time_discretization>`:
 
-  1) Create a SigniTrend instance
-  2) `index_new_tweets()` for every tweet you encounter during the current epoch (or timestep)
-  3) Optionally, get an `end_of_day_analysis()`
-  4) Call `next_epoch()`
+1. Create a SigniTrend instance
+2. `index_new_tweets()` for every tweet you encounter during the current epoch (or timestep)
+3. Optionally, get an `end_of_day_analysis()`
+4. Call `next_epoch()`
 
 [0] Erich Schubert, Michael Weiler, and Hans-Peter Kriegel. 2014. SigniTrend: scalable detection of emerging topics
 in textual streams by hashed significance thresholds. In Proceedings of the 20th ACM SIGKDD international
